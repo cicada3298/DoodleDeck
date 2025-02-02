@@ -15,8 +15,8 @@ const SignupModal = ({ closeModal, switchToLogin }) => {
     }
     try {
       await signUp(email, password);
-      alert("Signup successful!");
-      onClose(); // Close modal
+    //   alert("Signup successful!");
+      closeModal(); // Close modal
     } catch (error) {
       alert(error.message);
     }

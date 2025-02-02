@@ -10,8 +10,8 @@ const LoginModal = ({ closeModal, switchToSignup }) => {
   const handleLogin = async () => {
     try {
       await logIn(email, password);
-      alert("Login successful!");
-      onClose(); // Close modal
+    //   alert("Login successful!");
+      closeModal(); // Close modal
     } catch (error) {
       alert(error.message);
     }

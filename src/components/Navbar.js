@@ -3,8 +3,11 @@ import { useState } from "react";
 import Link from "next/link";
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
+import { useAuth } from "@/context/AuthContext";
+import { logOut } from "@/lib/authService";
 
 const Navbar = () => {
+  const {user} = useAuth();
   const [modalType, setModalType] = useState(null); // 'login' or 'signup'
 
   return (
@@ -27,12 +30,22 @@ const Navbar = () => {
             <Link href="/features" className="text-gray-700 hover:text-blue-600">
               Features
             </Link>
+            {user ? (
+            <>
+              <span className="text-gray-700">Welcome, {user.email}</span>
+              <button onClick={logOut} className="bg-red-600 text-white px-4 py-2 rounded-md">
+                Logout
+              </button>
+            </>
+          ) : (
             <button
               onClick={() => setModalType("login")}
               className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
             >
               Login
             </button>
+          )}
+            {/*  */}
           </div>
         </div>
       </nav>
