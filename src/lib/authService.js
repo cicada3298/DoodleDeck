@@ -2,6 +2,7 @@ import { auth } from "./firebaseConfig";
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  GithubAuthProvider,
   signInWithEmailAndPassword,
   signOut,
   signInWithPopup
@@ -15,6 +16,17 @@ export const googleSignIn = async () => {
     return result.user; // Returns user object
   } catch (error) {
     throw new Error("Google login failed");
+  }
+};
+
+export const githubSignIn = async () => {
+  const provider = new GithubAuthProvider();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    return result.user;
+  } catch (error) {
+    console.error("GitHub login error:", error.message);
+    throw error;
   }
 };
 
