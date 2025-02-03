@@ -2,18 +2,20 @@
 import { useState } from "react";
 import { logIn } from "@/lib/authService";
 import { motion } from "framer-motion";
+import { googleSignIn } from "@/lib/authService";
 
 const LoginModal = ({ closeModal, switchToSignup }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleLogin = async () => {
     try {
       await logIn(email, password);
-    //   alert("Login successful!");
+      //   alert("Login successful!");
       closeModal(); // Close modal
     } catch (error) {
-      alert(error.message);
+      setErrorMessage("Invalid email or password");
     }
   };
 
@@ -54,14 +56,19 @@ const LoginModal = ({ closeModal, switchToSignup }) => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        {errorMessage && (
+          <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
+        )}
+
         {/* Buttons */}
-        <div className="flex justify-between">
+        <div className="flex justify-between mb-4">
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
             onClick={handleLogin}
           >
             Login
           </button>
+          
           <button
             onClick={switchToSignup}
             className="text-gray-300 hover:text-white"
@@ -69,6 +76,19 @@ const LoginModal = ({ closeModal, switchToSignup }) => {
             New member?
           </button>
         </div>
+        <button
+        onClick={async () => {
+          try {
+            await googleSignIn();
+            closeModal();
+          } catch (error) {
+            setErrorMessage("Google login failed"); // Show error below inputs
+          }
+        }}
+        className="bg-red-500 text-white p-2 rounded-md w-full"
+      >
+        Sign in with Google
+      </button>
       </motion.div>
     </div>
   );
