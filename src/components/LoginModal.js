@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import { logIn } from "@/lib/authService";
+import { logIn } from "../../backend/lib/authService";
 import { motion } from "framer-motion";
-import { googleSignIn } from "@/lib/authService";
-import { githubSignIn } from "@/lib/authService";
+import { googleSignIn } from "../../backend/lib/authService";
+import { githubSignIn } from "../../backend/lib/authService";
 
 const LoginModal = ({ closeModal, switchToSignup }) => {
   const [email, setEmail] = useState("");
@@ -69,7 +69,7 @@ const LoginModal = ({ closeModal, switchToSignup }) => {
           >
             Login
           </button>
-          
+
           <button
             onClick={switchToSignup}
             className="text-gray-300 hover:text-white"
@@ -78,31 +78,31 @@ const LoginModal = ({ closeModal, switchToSignup }) => {
           </button>
         </div>
         <button
-        onClick={async () => {
-          try {
-            await googleSignIn();
-            closeModal();
-          } catch (error) {
-            setErrorMessage("Google login failed"); // Show error below inputs
-          }
-        }}
-        className="bg-red-500 text-white p-2 rounded-md w-full"
-      >
-        Sign in with Google
-      </button>
-      <button
-        onClick={async () => {
-          try {
-            await githubSignIn();
-            closeModal();
-          } catch (error) {
-            setErrorMessage("GitHub login failed")
-          }
-        }}
-        className="bg-gray-800 text-white p-2 rounded-md w-full mt-2"
-      >
-        Sign in with GitHub
-      </button>
+          onClick={async () => {
+            try {
+              await googleSignIn();
+              closeModal();
+            } catch (error) {
+              setErrorMessage("Google login failed"); // Show error below inputs
+            }
+          }}
+          className="bg-red-500 text-white p-2 rounded-md w-full"
+        >
+          Sign in with Google
+        </button>
+        <button
+          onClick={async () => {
+            try {
+              await githubSignIn();
+              closeModal();
+            } catch (error) {
+              setErrorMessage("GitHub login failed");
+            }
+          }}
+          className="bg-gray-800 text-white p-2 rounded-md w-full mt-2"
+        >
+          Sign in with GitHub
+        </button>
       </motion.div>
     </div>
   );

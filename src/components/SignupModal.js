@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { signUp } from "@/lib/authService";
+import { signUp } from "../../backend/lib/authService";
 
 const SignupModal = ({ closeModal, switchToLogin }) => {
   const [email, setEmail] = useState("");
@@ -15,7 +15,7 @@ const SignupModal = ({ closeModal, switchToLogin }) => {
     }
     try {
       await signUp(email, password);
-    //   alert("Signup successful!");
+      //   alert("Signup successful!");
       closeModal(); // Close modal
     } catch (error) {
       alert(error.message);
@@ -69,9 +69,10 @@ const SignupModal = ({ closeModal, switchToLogin }) => {
 
         {/* Buttons */}
         <div className="flex justify-between">
-          <button 
+          <button
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-            onClick={handleSignup}>
+            onClick={handleSignup}
+          >
             Sign Up
           </button>
           <button
