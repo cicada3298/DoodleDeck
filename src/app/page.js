@@ -1,7 +1,22 @@
+"use client"
 import Image from "next/image";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext"; // Assuming you have an AuthContext
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function Home() {
+  const { user } = useAuth(); // Get the authenticated user
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/dashboard"); // Redirect logged-in users
+    }
+  }, [user, router]);
   return (
+    <>
     <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
       {/* <nav className="bg-white shadow-md py-4">
@@ -16,7 +31,7 @@ export default function Home() {
       </nav> */}
 
       {/* Hero Section */}
-      <header className="bg-blue-600 text-white text-center py-20">
+      <header className="bg-gray-700 text-white text-center py-20">
         <h2 className="text-4xl font-bold">Create Stunning Campus Designs</h2>
         <p className="mt-4 text-lg">Design posters, social media graphics, and more with ease.</p>
         <a href="/dashboard" className="mt-6 inline-block px-6 py-3 bg-white text-blue-600 rounded-lg shadow-md font-semibold">Get Started</a>
@@ -58,5 +73,7 @@ export default function Home() {
       {/* Footer */}
       
     </div>
+    <Footer />
+    </>
   );
 }

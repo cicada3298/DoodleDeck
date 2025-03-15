@@ -35,7 +35,6 @@ const Navbar = () => {
             </Link>
             {user ? (
               <>
-                <span className="text-gray-700">Welcome, {user.email}</span>
                 <button
                   onClick={logOut}
                   className="bg-red-600 text-white px-4 py-2 rounded-md"
