@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext"; // Assuming you have an AuthContext
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,12 +9,14 @@ import Footer from "@/components/Footer";
 export default function Home() {
   const { user } = useAuth(); // Get the authenticated user
   const router = useRouter();
+  const pathname = usePathname();
+
 
   useEffect(() => {
     if (user) {
       router.push("/dashboard"); // Redirect logged-in users
     }
-  }, [user, router]);
+  }, [user]);
   return (
     <>
     <div className="min-h-screen bg-gray-100">

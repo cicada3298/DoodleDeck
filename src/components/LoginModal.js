@@ -4,18 +4,22 @@ import { logIn } from "../../backend/lib/authService";
 import { motion } from "framer-motion";
 import { googleSignIn } from "../../backend/lib/authService";
 import { githubSignIn } from "../../backend/lib/authService";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 const LoginModal = ({ closeModal, switchToSignup }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
+  const { user } = useAuth();
 
   const handleLogin = async () => {
     try {
-      await logIn(email, password);
-      //   alert("Login successful!");
-      closeModal(); // Close modal
+      await logIn(email, password, router);
+      closeModal();
     } catch (error) {
+      console.error(error);
       setErrorMessage("Invalid email or password");
     }
   };

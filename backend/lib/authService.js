@@ -1,4 +1,5 @@
 import { auth } from "./firebaseConfig";
+import { useAuth } from "@/context/AuthContext";
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -11,7 +12,7 @@ import {
 const API_URL = "http://localhost:5000/api/auth"; // Backend URL
 
 // 🔹 Helper function: Send Firebase ID token to backend
-const sendTokenToBackend = async (idToken) => {
+const sendTokenToBackend = async (idToken, router) => {
   try {
     const response = await fetch(`${API_URL}/firebase-login`, {
       method: "POST",
@@ -19,17 +20,30 @@ const sendTokenToBackend = async (idToken) => {
       body: JSON.stringify({ idToken }),
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json(); // Handle non-JSON responses
+    } catch (jsonError) {
+      throw new Error("Invalid response from server");
+    }
+
     if (!response.ok) throw new Error(data.message || "Backend authentication failed");
 
-    // 🔹 Store JWT in localStorage for session management
+    console.log("Received JWT:", data.token);
+
     localStorage.setItem("jwtToken", data.token);
+    const { setUser } = useAuth();
+    setUser(data.user);
+    await router.push('/dashboard'); // Ensure JWT is stored before redirecting
+    console.log("Hello");
+
     return data.user;
   } catch (error) {
     console.error("Backend authentication error:", error.message);
     throw error;
   }
 };
+
 
 // 🔹 Google Sign-In
 export const googleSignIn = async () => {
@@ -39,6 +53,7 @@ export const googleSignIn = async () => {
     const idToken = await result.user.getIdToken();
     return sendTokenToBackend(idToken); // Send to backend
   } catch (error) {
+    console.log(error);
     throw new Error("Google login failed");
   }
 };
@@ -69,11 +84,12 @@ export const signUp = async (email, password) => {
 };
 
 // 🔹 Email/Password Login
-export const logIn = async (email, password) => {
+export const logIn = async (email, password, router) => {
   try {
+    
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const idToken = await userCredential.user.getIdToken();
-    return sendTokenToBackend(idToken);
+    return sendTokenToBackend(idToken,router);
   } catch (error) {
     if (error.message !== "Firebase: Error (auth/invalid-email).") {
       console.error("Login error:", error.message);

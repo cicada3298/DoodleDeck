@@ -4,51 +4,90 @@ import { useEffect, useState, useRef } from "react";
 import * as fabric from "fabric";
 
 export default function Editor() {
-  const [imageUrl,setImageUrl] = useState(null);
   const canvasRef = useRef(null);
+  const canvasInstance = useRef(null);
+  const dropZoneRef = useRef(null);
 
   useEffect(() => {
-    const uploadedImage = localStorage.getItem('uploadedImage');
-    if (uploadedImage) {
-      setImageUrl(uploadedImage);
-    }
-  }, []);
-
-  useEffect(() => {
-    if(imageUrl && canvasRef.current){
+    if(canvasRef.current){
       const canvas = new fabric.Canvas(canvasRef.current, {
         width: 800,
         height: 600,
-        
       });
-      console.log("Canvas created", canvas);
-      console.log(imageUrl);
+
+      canvasInstance.current = canvas;
+      
+      return () => {
+        if (canvas) {
+          canvas.dispose();
+        }
+      };
+    }
+  }, []);
+
+  const uploadImage = (e) => {      
+    const file = e.target.files[0];
+    if(!file) return;
+    handleFile(file);
+  }
+
+  const handleFile = (file) => {
+    const canvas = canvasInstance.current;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const imageURL = e.target.result;
       let imageElement = document.createElement('img');
-      imageElement.src = imageUrl;
+      imageElement.src = imageURL;
       imageElement.onload = () => {
         const img = new fabric.Image(imageElement);
         const scaleFactor = Math.min(
-          canvas.width / img.width,
+          canvas.width / img.width, 
           canvas.height / img.height
         );
         img.scale(scaleFactor);
-  
-        // Center the image on the canvas
+
         img.set({
-          left: (canvas.width - img.getScaledWidth()) / 2,
-          top: (canvas.height - img.getScaledHeight()) / 2,
+          left : (canvas.width - img.getScaledWidth())/2,
+          top : (canvas.height - img.getScaledHeight())/2,
         });
         canvas.add(img);
         canvas.setActiveObject(img);
         canvas.renderAll();
       }
-      
-      return () => canvas.dispose();
-    }
-  }, [imageUrl]);
+
+    };
+  }
+
+  useEffect(() => {
+    const dropZone = dropZoneRef.current;
+    if (!dropZone) return;
+
+    const handleDragOver = (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
+    };
+
+    const handleDrop = (e) => {
+      e.preventDefault();
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    };
+
+    dropZone.addEventListener("dragover", handleDragOver);
+    dropZone.addEventListener("drop", handleDrop);
+
+    return () => {
+      dropZone.removeEventListener("dragover", handleDragOver);
+      dropZone.removeEventListener("drop", handleDrop);
+    };
+  }, []);
 
   const addText = () => {
-    const canvas = canvasRef.current?.fabric;
+    const canvas = canvasInstance.current;
+    if(!canvas) return;
     const text = new fabric.IText('Sample Text', {
       left: 100,
       top: 100,
@@ -59,7 +98,8 @@ export default function Editor() {
   };
 
   const addShape = (shape) => {
-    const canvas = canvasRef.current?.fabric;
+    const canvas = canvasInstance.current;
+    if(!canvas) return;
     let obj;
     if (shape === 'rect') {
       obj = new fabric.Rect({ left: 100, top: 100, width: 100, height: 100, fill: 'blue' });
@@ -70,7 +110,8 @@ export default function Editor() {
   };
 
   const applyFilter = () => {
-    const canvas = canvasRef.current?.fabric;
+    const canvas = canvasInstance.current;
+    if(!canvas) return;
     const obj = canvas.getActiveObject();
     if (obj && obj.filters) {
       obj.filters.push(new fabric.Image.filters.Grayscale());
@@ -80,7 +121,8 @@ export default function Editor() {
   };
 
   const crop = () => {
-    const canvas = canvasRef.current?.fabric;
+    const canvas = canvasInstance.current;
+    if(!canvas) return;
     const obj = canvas.getActiveObject();
     if (obj && obj.type === 'image') {
       const cropped = new fabric.Image(obj.getElement(), {
@@ -97,25 +139,34 @@ export default function Editor() {
   };
 
   return (
-    <div className="p-4">
-      <div className="mb-4 space-x-2">
-        <button onClick={addText} className="px-4 py-2 bg-blue-500 text-white rounded">
-          Add Text
-        </button>
-        <button onClick={() => addShape('rect')} className="px-4 py-2 bg-green-500 text-white rounded">
-          Add Rectangle
-        </button>
-        <button onClick={() => addShape('circle')} className="px-4 py-2 bg-purple-500 text-white rounded">
-          Add Circle
-        </button>
-        <button onClick={applyFilter} className="px-4 py-2 bg-gray-700 text-white rounded">
-          Apply Grayscale Filter
-        </button>
-        <button onClick={crop} className="px-4 py-2 bg-red-500 text-white rounded">
-          Crop Image
-        </button>
+    <div className="h-screen bg-black text-white flex flex-col items-center p-4">
+      {/* Toolbar */}
+      <div className="flex space-x-3 bg-gray-900 p-3 rounded-lg shadow-lg mb-4">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={uploadImage}
+          className="hidden"
+          id="upload-input"
+        />
+        <label
+          htmlFor="upload-input"
+          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded cursor-pointer"
+        >
+          Upload Image
+        </label>
+        <a
+          href="/dashboard"
+          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer"
+        >
+          Back to Dashboard
+        </a>
       </div>
-      <canvas ref={canvasRef} id="canvas" className="border w-full h-96" />
+
+      {/* Canvas Container */}
+      <div ref={dropZoneRef} className="flex justify-center items-center bg-white h-screen w-full border-2 border-dashed border-gray-500">
+        <canvas ref={canvasRef} className="" />
+      </div>
     </div>
   );
 }
