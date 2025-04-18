@@ -18,6 +18,10 @@ function LoginCard() {
             hover:border-[#8b3dff] hover:text-[#8b3dff] transition-all duration-300 group transform hover:scale-[1.01] active:scale-[0.99]
             `}
           onClick={() => signIn("google", { callbackUrl: "/" })}
+          //Using the signIn() method ensures the user ends back on the page they started on after completing 
+          // a sign in flow. By default, when calling the signIn() method with no arguments, you will be redirected
+          // to the NextAuth.js sign-in page. The callbackUrl specifies to which URL the user will be redirected 
+          // after signing in. Defaults to the page URL the sign-in is initiated from.
         >
           <div className="bg-white rounded-full p-1 flex items-center justify-center group-hover:bg-[#8b3dff]/10 transition-colors duration-300">
             <LogIn className="w-5 h-5 group-hover:text-[#8b3dff] transition-colors duration-300" />

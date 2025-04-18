@@ -5,7 +5,7 @@ import React from 'react'
 
 function NextAuthProvider({children}) {
   return(
-    <SessionProvider>{children}</SessionProvider>
+    <SessionProvider>{children}</SessionProvider>  //shares session across components
   )
 }
 
