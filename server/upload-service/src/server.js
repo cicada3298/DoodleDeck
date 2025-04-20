@@ -1,8 +1,8 @@
 require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const helmet = require("helmet");
+const express = require("express");  //express: Web server framework
+const mongoose = require("mongoose");  //MongoDB ODM
+const cors = require("cors");  //Allows cross-origin requests
+const helmet = require("helmet");  //Sets HTTP headers for security
 
 const app = express();
 const PORT = process.env.PORT || 5003;

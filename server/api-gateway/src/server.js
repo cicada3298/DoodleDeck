@@ -1,6 +1,8 @@
+//api gateway for microservices
+
 require("dotenv").config();
 const express = require("express");
-const proxy = require("express-http-proxy");
+const proxy = require("express-http-proxy");  //Uses express-http-proxy to forward requests to other services
 const cors = require("cors");
 const helmet = require("helmet");
 const authMiddleware = require("./middleware/auth-middleware");
@@ -13,10 +15,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//proxy options
+
 const proxyOptions = {
-  proxyReqPathResolver: (req) => {
-    return req.originalUrl.replace(/^\/v1/, "/api");
+  proxyReqPathResolver: (req) => {  //Intercepts the original URL of the incoming request (like /v1/designs/create)
+    return req.originalUrl.replace(/^\/v1/, "/api");  //Replaces the starting /v1 with /api. Returns the new URL
+    //  path that should be forwarded to the target microservice
   },
   proxyErrorHandler: (err, res, next) => {
     res.status(500).json({
@@ -25,7 +28,8 @@ const proxyOptions = {
     });
   },
 };
-
+ 
+//Forwards /v1/designs requests to process.env.DESIGN
 app.use(
   "/v1/designs",
   authMiddleware,
@@ -34,6 +38,7 @@ app.use(
   })
 );
 
+// /v1/media/upload goes to the UPLOAD service with body parsing off
 app.use(
   "/v1/media/upload",
   authMiddleware,
@@ -43,6 +48,7 @@ app.use(
   })
 );
 
+//For other media requests, body parsing is enabled
 app.use(
   "/v1/media",
   authMiddleware,
@@ -51,7 +57,8 @@ app.use(
     parseReqBody: true,
   })
 );
-
+ 
+//Forwards subscription requests to SUBSCRIPTION service
 app.use(
   "/v1/subscription",
   authMiddleware,
