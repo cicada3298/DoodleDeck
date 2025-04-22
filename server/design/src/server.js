@@ -3,6 +3,7 @@ const express = require("express");  //express: Web server framework
 const mongoose = require("mongoose");  //MongoDB ODM
 const cors = require("cors");  //Allows cross-origin requests
 const helmet = require("helmet");  //Sets HTTP headers for security
+const designRoutes = require('./routes/design-routes')
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -16,6 +17,8 @@ app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/api/designs',designRoutes)
 
 async function startServer() {
   try {
